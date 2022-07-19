@@ -187,3 +187,14 @@ def auth_error(error):
         "error": error.status_code,
         "message": error.error['description']
     }), error.status_code
+
+'''
+@Todo[X] implement internal server error handler
+'''
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": 'Internal Server Error'
+    }), 500
