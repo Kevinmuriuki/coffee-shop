@@ -46,6 +46,12 @@ To run the server, execute:
 flask run --reload
 ```
 
+or
+
+```bash
+FLASK_APP=api.py FLASK_DEBUG=true flask run
+```
+
 The `--reload` flag will detect file changes and restart the server automatically.
 
 ## Tasks
