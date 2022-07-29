@@ -22,7 +22,7 @@ db_drop_and_create_all()
 # ROUTES
 @app.route('/')
 def index():
-    return jsonify({
+    return json.dumps({
         'success': True,
         'message':'hello-coffee'
     }), 200
@@ -133,7 +133,7 @@ def update_drink(jwt, id):
 
         drink.update()
 
-        return jsonify({
+        return json.dumps({
             'success': True,
             'drinks': [drink.long()]
         })
@@ -153,7 +153,7 @@ def update_drink(jwt, id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<int:id>', methods=['DELETE'])
+@app.route('/drinks/<int:id>', methods=['DELETE'], endpoint='delete_drink')
 @requires_auth('delete:drinks')
 def delete_drink(payload, id):
     drink = Drink.query.filter(Drink.id == id).one_or_none()
@@ -163,10 +163,13 @@ def delete_drink(payload, id):
 
     try:
         drink.delete()
-    except BaseException:
-        abort(400)
+        return json.dumps({'success': True, 'drink': id}), 200
+    except:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
-    return jsonify({'success': True, 'delete': id}), 200
 
 # Error Handling
 '''
