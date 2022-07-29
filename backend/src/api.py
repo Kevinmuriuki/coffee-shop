@@ -88,22 +88,22 @@ def get_drink_detail(payload):
 @app.route('/drinks', methods=['POST'], endpoint="post_drink")
 @requires_auth('post:drinks')
 def create_drink(payload):
-    req = request.get_json()
-
+    data = dict(request.form or request.json or request.data)
+    drink = Drink(
+                title=data.get('title'),
+                recipe=data.get('recipe') if type(data.get('recipe')
+                ) == str
+                    else json.dumps(data.get('recipe')
+                )
+            )
     try:
-        req_recipe = req['recipe']
-        if isinstance(req_recipe, dict):
-            req_recipe = [req_recipe]
-
-        drink = Drink()
-        drink.title = req['title']
-        drink.recipe = json.dumps(req_recipe)  # convert object to a string
         drink.insert()
-
-    except BaseException:
-        abort(400)
-
-    return jsonify({'success': True, 'drinks': [drink.long()]})
+        return json.dumps({'success': True, 'drink': drink.long()}), 200
+    except:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
 '''
 @TODO[X] implement endpoint
