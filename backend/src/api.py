@@ -37,12 +37,13 @@ def index():
 '''
 @app.route('/drinks', methods=['GET'], endpoint='get_drinks')
 def get_drinks():
+    drinks = Drink.query.all()
 
     try:
         return json.dumps({
             'success':
             True,
-            'drinks': [drink.short() for drink in Drink.query.all()]
+            'drinks': [drink.short() for drink in drinks]
         }), 200
     except:
         return json.dumps({
@@ -58,15 +59,22 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks-detail', methods=['GET'])
+@app.route('/drinks-detail', methods=['GET'], endpoint="drinks_detail")
 @requires_auth('get:drinks-detail')
 def get_drink_detail(payload):
     drinks = Drink.query.all()
 
-    return jsonify({
-        'success': True,
-        'drinks': [drink.long() for drink in drinks]
-    }), 200
+    try:
+        return json.dumps({
+            'success':
+            True,
+            'drinks': [drink.long() for drink in drinks]
+        }), 200
+    except:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
 '''
 @TODO[X] implement endpoint
