@@ -199,7 +199,7 @@ implement error handler for 404
     error handler should conform to general task above
 '''
 @app.errorhandler(404)
-def not_found(error):
+def unprocessable(error):
     return jsonify({
         "success": False,
         "error": 404,
@@ -212,7 +212,7 @@ def not_found(error):
     error handler should conform to general task above
 '''
 @app.errorhandler(AuthError)
-def auth_error(error):
+def unprocessable(error):
     return jsonify({
         "success": False,
         "error": error.status_code,
@@ -223,7 +223,7 @@ def auth_error(error):
 @Todo[X] implement internal server error handler
 '''
 @app.errorhandler(500)
-def internal_server_error(error):
+def unprocessable(error):
     return jsonify({
         "success": False,
         "error": 500,
