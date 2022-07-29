@@ -116,26 +116,32 @@ def create_drink(payload):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<int:id>', methods=['PATCH'])
+@app.route('/drinks/<int:id>', methods=['PATCH'], endpoint="patch_drink")
 @requires_auth('patch:drinks')
 def update_drink(jwt, id):
-    drink = Drink.query.get(id)
-    if drink is None:
-        abort(404)
+    try:
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if drink is None:
+            abort(404)
 
-    data = request.get_json()
-    if 'title' in data:
-        drink.title = data['title']
+        data = dict(request.form or request.json or request.data)
+        if 'title' in data:
+            drink.title = data['title']
 
-    if 'recipe' in data:
-        drink.recipe = json.dumps(data['recipe'])
+        if 'recipe' in data:
+            drink.recipe = json.dumps(data['recipe'])
 
-    drink.update()
+        drink.update()
 
-    return jsonify({
-        'success': True,
-        'drinks': [drink.long()]
-    })
+        return jsonify({
+            'success': True,
+            'drinks': [drink.long()]
+        })
+    except:
+        return json.dumps({
+            'success': False,
+            'error': "An error occurred"
+        }), 500
 
 '''
 @TODO[X] implement endpoint
