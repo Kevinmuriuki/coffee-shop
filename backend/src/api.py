@@ -229,3 +229,14 @@ def internal_server_error(error):
         "error": 500,
         "message": 'Internal Server Error'
     }), 500
+
+
+"""
+    @TODO[x] implement error handler for AuthError
+    Receive the raised authorization error and propagates it as response
+"""
+@app.errorhandler(AuthError)
+def handle_auth_error(ex):
+    response = jsonify(ex.error)
+    response.status_code = ex.status_code
+    return response
