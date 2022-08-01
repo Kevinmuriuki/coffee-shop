@@ -42,12 +42,20 @@ def get_token_auth_header():
 
     header_parts = auth_header.split(' ')
 
-    if len(header_parts) != 2 or not header_parts:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Authorization header must be in the format'
-            ' Bearer token'
-        }, 401)
+    if len(header_parts) > 2:
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Authorization header must be"
+                " Bearer token"
+            }, 401)
+
+    elif len(header_parts) == 1:
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Token not found"
+            }, 401)
 
     elif header_parts[0].lower() != 'bearer':
         raise AuthError({
@@ -69,15 +77,23 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    if 'permissions' not in payload:
-        abort(400)
+    
+    if payload.get("permision"):
+        token = payload.get("permision")
+        if permission not in token:
+            raise AuthError({
+                'code': 'unauthorized',
+                'description': 'User does not have enough privileges',
+            }, 401)
+        else:
+            return True
 
-    if permission not in payload['permissions']:
-        raise AuthError({
-            'code': 'unauthorized',
-            'description': 'Permission Not found',
-        }, 401)
-    return True
+    else:
+        raise AuthError(
+            {
+                'code': 'invalid_permissions',
+                'description': 'User does not have any roles attached'
+            }, 401)
 
 '''
 @TODO[X] implement verify_decode_jwt(token) method
@@ -161,7 +177,7 @@ def verify_decode_jwt(token):
     }, 400)
 
 '''
-@TODO[] implement @requires_auth(permission) decorator method
+@TODO[X] implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
 
