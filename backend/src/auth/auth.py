@@ -83,7 +83,7 @@ def check_permissions(permission, payload):
                 {
                     'code': 'invalid_permissions',
                     'description': 'User does not have enough privileges'
-                }, 401)
+                }, 403)
         else:
             return True
     else:
@@ -91,7 +91,7 @@ def check_permissions(permission, payload):
             {
                 'code': 'invalid_permissions',
                 'description': 'User does not have any roles attached'
-            }, 401)
+            }, 403)
 
 '''
 @TODO[X] implement verify_decode_jwt(token) method
