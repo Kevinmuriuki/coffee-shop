@@ -65,7 +65,7 @@ def drinks():
 
 @app.route('/drinks', methods=['POST'], endpoint='post_drink')
 @requires_auth('post:drinks')
-def drinks(f):
+def drinks(payload):
     data = dict(request.form or request.json or request.data)
     drink = Drink(title=data.get('title'),
                   recipe=data.get('recipe') if type(data.get('recipe')) == str
@@ -89,7 +89,7 @@ def drinks(f):
 '''
 @app.route('/drinks-detail', methods=['GET'], endpoint='drinks_detail')
 @requires_auth('get:drinks-detail')
-def drinks_detail(f):
+def drinks_detail(payload):
     try:
         return json.dumps({
             'success':
@@ -118,14 +118,14 @@ def drinks_detail(f):
 
 @app.route('/drinks/<id>', methods=['PATCH'], endpoint='patch_drink')
 @requires_auth('patch:drinks')
-def drinks(f, id):
+def drinks(payload, id):
+    req = dict(request.form or request.json or request.data)
+    drink = Drink.query.filter(Drink.id == id).one_or_none()
     try:
-        data = dict(request.form or request.json or request.data)
-        drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
+        
         if drink:
-            drink.title = data.get('title') if data.get(
-                'title') else drink.title
-            recipe = data.get('recipe') if data.get('recipe') else drink.recipe
+            drink.title = req.get('title') if req.get('title') else drink.title
+            recipe = req.get('recipe') if req.get('recipe') else drink.recipe
             drink.recipe = recipe if type(recipe) == str else json.dumps(
                 recipe)
             drink.update()
@@ -155,7 +155,7 @@ def drinks(f, id):
 '''
 @app.route('/drinks/<id>', methods=['DELETE'], endpoint='delete_drink')
 @requires_auth('patch:drinks')
-def drinks(f, id):
+def drinks(payload, id):
     try:
         drink = drink = Drink.query.filter(Drink.id == id).one_or_none()
         if drink:
